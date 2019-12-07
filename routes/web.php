@@ -12,7 +12,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return ["message" => "All API routes are on {server}/api"];
+    return ["message" => "Welcome to Primedpoll Api, use this url to access {server}/api"];
 });
 
 $router->get('/api', function () use ($router) {
