@@ -18,6 +18,7 @@ class CreatePollsTable extends Migration
             $table->string('question');
             $table->unsignedInteger('owner_id');
             $table->unsignedInteger('interest_id');
+            $table->unsignedInteger('option_type');
             $table->timestamp('startdate');
             $table->timestamp('expirydate')->nullable();
             $table->timestamps();

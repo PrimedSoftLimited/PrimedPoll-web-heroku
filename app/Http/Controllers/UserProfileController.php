@@ -136,9 +136,10 @@ class UserProfileController extends Controller
         $this->validateRequest($request);
 
         $user->first_name = $request->input('first_name');
-        $user->last_name = $request->input('last_name');
-        $user->phone = $request->input('phone');
-        $user->dob = $request->input('dob');
+        $user->last_name  = $request->input('last_name');
+        $user->phone      = $request->input('phone');
+        $user->dob        = $request->input('dob');
+        $user->country    = $request->input('country');
 
         $user->save();
 
@@ -167,14 +168,17 @@ class UserProfileController extends Controller
     {
        $rules = [
         'first_name' => 'required',
-        'last_name' => 'string|required',
-        'phone' => 'phone:NG,US,mobile|required',
-        'dob' => 'date|required',
+        'last_name'  => 'string|required',
+        'phone'      => 'phone:NG,US,mobile|required',
+        'dob'        => 'date|required',
+        'country'    => 'required|string',
+        'gender'     => 'required|regex:/(^([Male,Female,Others]+)?$)/u'
         ];
 
         $messages = [
-            'required' => ':attribute is required',
-            'phone' => ':attribute number is invalid'
+            'required'     => ':attribute is required',
+            'phone'        => ':attribute number is invalid',
+            'gender.regex' => ':attribute is invalid accepted only(Male,Female,Others)',
         ];
 
         $this->validate($request, $rules);

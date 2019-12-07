@@ -1,4 +1,4 @@
---<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -47,8 +47,6 @@ class UserFeedsController extends Controller
         return response()->json(['data' =>['success' => true, 'feeds' => $this->feeds]], 200);
 
     }
-
-
 
     public function scrolledfeeds(Request $request,$id = null, $offset) {
 
@@ -143,6 +141,10 @@ class UserFeedsController extends Controller
                 'poll'      => $fetch_poll->question,
                 'interest'  => $fetch_interest->title,
                 'poll_owner_id' => $fetch_poll->owner_id,
+                'option_type' => $fetch_poll->option_type,
+                'poll_date' => date('Y-m-d',strtotime($fetch_poll->created_at)),
+                'poll_startdate'  =>  date('Y-m-d',strtotime($fetch_poll->startdate)),
+                'poll_expirydate' =>  date('Y-m-d',strtotime($fetch_poll->expirydat)),
                 'firstname' => $fetch_user->first_name,
                 'lastname'  => $fetch_user->last_name,
                 'image_link'=> 'https://res.cloudinary.com/getfiledata/image/upload/w_200,c_thumb,ar_4:4,g_face/',
@@ -158,9 +160,9 @@ class UserFeedsController extends Controller
   }
 
   public function voteStatus($poll_id) {
-        $check_vote_status = Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll_id)->exists();
+        $check_vote_status = Vote::where('voter_id', Auth::user()->id)->where('poll_id', $poll_id)->exists();
         if ($check_vote_status) {
-            $vote_info = Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll_id)->first();
+            $vote_info = Vote::where('voter_id', Auth::user()->id)->where('poll_id', $poll_id)->first();
             return  $vote_info->option_id;
         }else {
           return false;

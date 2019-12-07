@@ -82,13 +82,14 @@ class UserPollController extends Controller
             $poll = new Poll;
             if(!Poll::where('question', $request->input('question'))->where('interest_id', $id)->exists())
                 {
-
+                    DB::beginTransaction();
                     try {
-                        $poll->question = $request->input('question');
-                        $poll->startdate = $request->input('startdate');
-                        $poll->expirydate = $request->input('expirydate');
+                        $poll->question    = $request->input('question');
+                        $poll->startdate   = $request->input('startdate');
+                        $poll->option_type = $request->input('option_type');
+                        $poll->expirydate  = $request->input('expirydate');
                         $poll->interest_id = $interest->id;
-                        $poll->owner_id = Auth::user()->id;
+                        $poll->owner_id    = Auth::user()->id;
                         $poll->save();
 
                         if ($request->input('option_type') === "text") {
@@ -97,7 +98,7 @@ class UserPollController extends Controller
                             $res   = $this->textOption($items, $poll);
                         }else if($request->input('option_type') === "image") { 
                             $files = $request->file('options');
-                            $res = $this->imageOption($files, $poll);  
+                            $res = $this->imageOption($files, $poll); 
                         }
 
                         $poll = Poll::where('id', $poll->id)
@@ -107,8 +108,10 @@ class UserPollController extends Controller
                          }])
                         ->get();
                         $res['polls'] = $poll;
+                        DB::commit();
                         return response()->json($res,  $res['status_code']);
                     }catch(\Exception $e) {
+                        DB::rollBack();
                         $res['message'] = 'An error occured, please try again!';
                         $res['hint']    = $e->getMessage();
                         
@@ -149,7 +152,7 @@ class UserPollController extends Controller
                     
                         if($file_size > 800000) {
                             $res['message'] = "An image with title ".$file->getClientOriginalName()." size is too large (less than 5mb only)";
-                             $res['status'] =  422;
+                             $res['status_code'] =  422;
                              return $res;
                         }
                         DB::beginTransaction();
@@ -180,7 +183,7 @@ class UserPollController extends Controller
                 }
             }
         
-            if(count($data) >= 4) {
+            if(count($data) >= 3) {
                 $res['status'] = true;
                 $res['message'] = "Upload Successful!";
                 $res['image_link'] = 'https://res.cloudinary.com/getfiledata/image/upload/';

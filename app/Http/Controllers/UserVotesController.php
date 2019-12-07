@@ -31,27 +31,28 @@ class UserVotesController extends Controller
           DB::beginTransaction();
         try{
             $vote = new Vote;
-                if(!Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll->id)->exists())
-                {
-                    $vote->owner_id = Auth::user()->id;
-                    $vote->poll_owner_id = $request->input('poll_owner_id');
+            //This check if the user has voted before ... Please commented
+                // if(!Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll->id)->exists())
+                // {
+                    $vote->voter_id = Auth::user()->id;
+                    $vote->owner_id = $request->input('poll_owner_id');
                     $vote->option_id = $request->input('option_id');
                     $vote->poll_id = $poll->id;
                     $vote->save();
                     //if operation was successful save changes to database
                     DB::commit();
                     return response()->json(['success' => true, 'check' => 1, 'message' => 'Voted Successful!', 'vote' => $vote], 201);
-                }
+                // }
 
-                $unVote =Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll->id)->first();
-                $unVote->delete();
+                // $unVote =Vote::where('owner_id', Auth::user()->id)->where('poll_id', $poll->id)->first();
+                // $unVote->delete();
                 //if operation was successful save changes to database
-                DB::commit();
-                return response()->json(['success' => true, 'check' => 0, 'message' => 'Unvote Successful!', 'unvote' => $unVote], 201);
+                // DB::commit();
+                // return response()->json(['success' => true, 'check' => 0, 'message' => 'Unvote Successful!', 'unvote' => $unVote], 201);
             }catch (\Exception $e) {
               //if any operation fails, Thanos snaps finger - user was not created
               DB::rollBack();
-                return response()->json(['error' => false, 'message'=> "Opps! Something went wrong!"], 400);
+                return response()->json(['error' => false, 'message'=> "Opps! Something went wrong!", 'hint' => $e->getMessage()], 501);
             }
         } return response()->json(['error' => false, 'message'=> "Opps! Something thing wrong!"], 404);
 

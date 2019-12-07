@@ -27,6 +27,8 @@ class UserCompleteRegistrationController extends Controller
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
         $user->phone = $request->input('phone');
+        $user->country = $request->input('country');
+        $user->gender = $request->input('gender');
         $user->dob = $request->input('dob');
         $user->image = $default_image;
         $user->username = '@'.$user->first_name.$uniqueID;
@@ -55,6 +57,8 @@ class UserCompleteRegistrationController extends Controller
         'first_name' => '|required',
         'last_name' => 'string|required',
         'phone' => 'phone:NG,US,mobile|required',
+        'gender' => 'string|required',
+        'country' => 'string|required',
         'dob' => 'date|required',
         'interest_ids' => 'required|array|min:5',
         'interest_ids.*' => 'required|integer',
